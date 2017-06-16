@@ -14,6 +14,7 @@ public class Main extends Application {
 		launch(args);
 		if(args.length>0){
 			 file = new File(args[0]);
+			 System.out.println(file.getAbsolutePath());
 		}
 			
 	}
@@ -21,11 +22,10 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		Model model = new Model();
-		Controller controller = new Controller(model, file);
+		Controller controller = new Controller(model, file==null?null:file);
 		View view = new View(controller, model); 
 		
-		try {
-			
+		try {			
 			Scene scene = new Scene(view.asParent(), 1000, 800);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);

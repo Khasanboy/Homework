@@ -57,7 +57,7 @@ public class View {
 		//top
 		top = new HBox();
 		top.setId("top");
-		Label logo = new Label("Refueling info");
+		Label logo = new Label("Refueling information");
 		logo.setId("logo");
 		top.getChildren().add(logo);
 		root.setTop(top);

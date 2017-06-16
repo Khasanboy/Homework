@@ -10,6 +10,8 @@ public class Controller {
 	public Controller(Model model, File file){
 		this.model = model;
 		this.file = file;
+		//System.out.println(file.exists());
 	}
+	
 
 }
