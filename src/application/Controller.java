@@ -1,6 +1,7 @@
 package application;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -21,20 +22,20 @@ public class Controller {
 
 	public Set<String> gasolineTypes = new HashSet<>();
 	public String fileStatus = "";
-	public FuelData allData = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
+	public FuelData allData = new FuelData("", new BigDecimal("0.000"), 0.00);
 
-	public FuelData jan = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData feb = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData mar = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData apr = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData may = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData jun = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData jul = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData aug = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData sep = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData oct = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData nov = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
-	public FuelData dec = new FuelData("", new Fuel("0.000"), new Fuel("0.00"));
+	public FuelData jan = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData feb = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData mar = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData apr = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData may = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData jun = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData jul = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData aug = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData sep = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData oct = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData nov = new FuelData("", new BigDecimal("0.000"), 0.00);
+	public FuelData dec = new FuelData("", new BigDecimal("0.000"), 0.00);
 
 	public Controller(String file) throws ParseException {
 		
@@ -53,7 +54,7 @@ public class Controller {
 						
 					}
 					
-					else if (new Fuel(parts[1]).getAmount() < 0 || new Fuel(parts[2]).getAmount() < 0) {
+					else if (new BigDecimal(parts[1].replace(",", ".")).intValue()<0 || Double.parseDouble(parts[2].replace(",", ".")) < 0) {
 						
 						this.fileStatus = "File contains negative values";
 						
@@ -63,10 +64,12 @@ public class Controller {
 
 						if (allData.getFuelName().equals("")) {
 							allData.setFuelName(parts[0].toString());
-							allData.setFuelPrice(new Fuel(parts[1]));
+							allData.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 						}
 
-						allData.setFuelAmount(allData.updateFuelAmount(allData.getFuelAmount(),new Fuel(parts[2])));
+						allData.setFuelAmount(allData.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
+						
+						System.out.println(allData.getTotalValue());
 
 						calendar.setTime(format.parse(parts[3]));
 						
@@ -75,110 +78,110 @@ public class Controller {
 						case 0:
 							if (jan.getFuelName().equals("")) {
 								jan.setFuelName(parts[0].toString());
-								jan.setFuelPrice(new Fuel(parts[1]));
+								jan.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							jan.setFuelAmount(jan.updateFuelAmount(jan.getFuelAmount(),new Fuel(parts[2])));	
+							jan.setFuelAmount(jan.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));	
 							break;
 
 						case 1:
 							if (feb.getFuelName().equals("")) {
 								feb.setFuelName(parts[0].toString());
-								feb.setFuelPrice(new Fuel(parts[1]));
+								feb.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 
 							}
 
-							feb.setFuelAmount(feb.updateFuelAmount(feb.getFuelAmount(),new Fuel(parts[2])));
+							feb.setFuelAmount(feb.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 2:
 							if (mar.getFuelName().equals("")) {
 								mar.setFuelName(parts[0].toString());
-								mar.setFuelPrice(new Fuel(parts[1]));
+								mar.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							mar.setFuelAmount(mar.updateFuelAmount(mar.getFuelAmount(),new Fuel(parts[2])));
+							mar.setFuelAmount(mar.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 3:
 							if (apr.getFuelName().equals("")) {
 								apr.setFuelName(parts[0].toString());
-								apr.setFuelPrice(new Fuel(parts[1]));
+								apr.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							apr.setFuelAmount(apr.updateFuelAmount(apr.getFuelAmount(),new Fuel(parts[2])));
+							apr.setFuelAmount(apr.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 4:
 							if (may.getFuelName().equals("")) {
 								may.setFuelName(parts[0].toString());
-								may.setFuelPrice(new Fuel(parts[1]));
+								may.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							may.setFuelAmount(may.updateFuelAmount(may.getFuelAmount(),new Fuel(parts[2])));
+							may.setFuelAmount(may.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 5:
 							if (jun.getFuelName().equals("")) {
 								jun.setFuelName(parts[0].toString());
-								jun.setFuelPrice(new Fuel(parts[1]));
+								jun.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							jun.setFuelAmount(jun.updateFuelAmount(jun.getFuelAmount(),new Fuel(parts[2])));
+							jun.setFuelAmount(jun.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 6:
 							if (jul.getFuelName().equals("")) {
 								jul.setFuelName(parts[0].toString());
-								jul.setFuelPrice(new Fuel(parts[1]));
+								jul.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							jul.setFuelAmount(jul.updateFuelAmount(jul.getFuelAmount(),new Fuel(parts[2])));
+							jul.setFuelAmount(jul.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 7:
 							if (aug.getFuelName().equals("")) {
 								aug.setFuelName(parts[0].toString());
-								aug.setFuelPrice(new Fuel(parts[1]));
+								aug.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							aug.setFuelAmount(aug.updateFuelAmount(aug.getFuelAmount(),new Fuel(parts[2])));
+							aug.setFuelAmount(aug.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 8:
 							if (sep.getFuelName().equals("")) {
 								sep.setFuelName(parts[0].toString());
-								sep.setFuelPrice(new Fuel(parts[1]));
+								sep.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							sep.setFuelAmount(sep.updateFuelAmount(sep.getFuelAmount(),new Fuel(parts[2])));
+							sep.setFuelAmount(sep.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 9:
 							if (oct.getFuelName().equals("")) {
 								oct.setFuelName(parts[0].toString());
-								oct.setFuelPrice(new Fuel(parts[1]));
+								oct.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							oct.setFuelAmount(oct.updateFuelAmount(oct.getFuelAmount(),new Fuel(parts[2])));
+							oct.setFuelAmount(oct.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 10:
 							if (nov.getFuelName().equals("")) {
 								nov.setFuelName(parts[0].toString());
-								nov.setFuelPrice(new Fuel(parts[1]));
+								nov.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 							
-							nov.setFuelAmount(nov.updateFuelAmount(nov.getFuelAmount(),new Fuel(parts[2])));
+							nov.setFuelAmount(nov.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 							
 						case 11:
 							if (dec.getFuelName().equals("")) {
 								dec.setFuelName(parts[0].toString());
-								dec.setFuelPrice(new Fuel(parts[1]));
+								dec.setFuelPrice(new BigDecimal(parts[1].replace(",", ".")));
 							}
 
-							dec.setFuelAmount(dec.updateFuelAmount(dec.getFuelAmount(),new Fuel(parts[2])));
+							dec.setFuelAmount(dec.getFuelAmount()+Double.parseDouble(parts[2].replace(",", ".")));
 							break;
 						}
 					}
