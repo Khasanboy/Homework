@@ -1,18 +1,5 @@
 package application;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 
 public class FuelData{
 	
@@ -20,7 +7,7 @@ public class FuelData{
 	private Fuel fuelPrice;
 	private Fuel fuelAmount;
 	
-	private double totalValue; 
+	private double totalValue = 0.000;
 
 	public FuelData(String fuelName, Fuel fuelPrice, Fuel fuelAmount){
 		this.fuelName = fuelName;
@@ -34,6 +21,7 @@ public class FuelData{
 	}
 	
 	public double getTotalValue() {
+		this.totalValue = this.fuelAmount.amount * this.fuelPrice.amount;
 		return this.totalValue;
 	}
 

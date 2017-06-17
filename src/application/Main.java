@@ -1,6 +1,5 @@
 package application;
 
-import java.io.File;
 import java.text.ParseException;
 
 import javafx.application.Application;
@@ -15,7 +14,7 @@ public class Main extends Application {
 		
 		if(args.length>0){
 			 filePath = args[0];
-			 System.out.println(filePath);
+			 //System.out.println(filePath);
 		}
 		launch(args);
 			
@@ -23,7 +22,6 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws ParseException {
-		//FuelData model = new FuelData();
 		Controller controller = new Controller(filePath);
 		View view = new View(controller); 
 		
