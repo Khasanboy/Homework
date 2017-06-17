@@ -1,6 +1,7 @@
 package application;
 
 import java.io.File;
+import java.text.ParseException;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -8,25 +9,26 @@ import javafx.scene.Scene;
 
 public class Main extends Application {
 	
-	static File file;
+	static String filePath;
 
 	public static void main(String[] args) {
-		launch(args);
+		
 		if(args.length>0){
-			 file = new File(args[0]);
-			 System.out.println(file.getAbsolutePath());
+			 filePath = args[0];
+			 System.out.println(filePath);
 		}
+		launch(args);
 			
 	}
 
 	@Override
-	public void start(Stage primaryStage) {
-		Model model = new Model();
-		Controller controller = new Controller(model, file==null?null:file);
-		View view = new View(controller, model); 
+	public void start(Stage primaryStage) throws ParseException {
+		//FuelData model = new FuelData();
+		Controller controller = new Controller(filePath);
+		View view = new View(controller); 
 		
 		try {			
-			Scene scene = new Scene(view.asParent(), 1000, 800);
+			Scene scene = new Scene(view.asParent(), 1000, 600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Barchart generator");

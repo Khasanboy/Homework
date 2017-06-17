@@ -1,14 +1,33 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
-public class Model {
+
+public class FuelData{
 	
 	private String fuelName;
 	private Fuel fuelPrice;
 	private Fuel fuelAmount;
 	private Date refuelingDate;
+	
+	public FuelData(String fuelName, Fuel fuelPrice, Fuel fuelAmount, Date refuelingDate){
+		this.fuelName = fuelName;
+		this.fuelPrice = fuelPrice;
+		this.fuelAmount = fuelAmount;
+		this.refuelingDate = refuelingDate;
+		
+	}
 	
 	public String getFuelName() {
 		return fuelName;
@@ -31,30 +50,31 @@ public class Model {
 	public Date getRefuelingDate() {
 		return refuelingDate;
 	}
+	
 	public void setRefuelingDate(Date refuelingDate) {
-		//String pattern = "dd.MM.yyyy";
-		//SimpleDateFormat format = new SimpleDateFormat(pattern);
 		this.refuelingDate = refuelingDate;
 	}
 	
-	
-
 }
 
 class Fuel {
 	
 	private double amount;
 	
-	public Fuel(String input){
-		this.amount = Double.parseDouble(input);
+	public Fuel(){
+		
 	}
 	
-	public double getAmount(){
-		return this.amount;
+	public Fuel(String input){
+		this.amount = new Double(input.replace(',', '.'));
+	}
+	
+	public double getAmount(String input){
+		return new Double(input.replace(',', '.'));
 	}
 
 	public void setAmount(String amount) {
-		this.amount = Double.parseDouble(amount);
+		this.amount = new Double(amount.replace(',', '.'));
 	}
 	
 	
