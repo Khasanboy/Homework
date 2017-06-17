@@ -40,7 +40,7 @@ public class View {
 		
 		 createPane();
 
-	     createAndLayoutControls();
+	     createAndLayoutControls(controller);
 	     
 	     setItemsToCombobox(controller);
 	     
@@ -57,6 +57,7 @@ public class View {
 	
 	private void setItemsToCombobox(Controller model){
 		ObservableList<String> list = FXCollections.observableArrayList(model.gasolineTypes);
+		list.add("All");
 		gasolines.setItems(list);
 	}
 	
@@ -71,7 +72,7 @@ public class View {
 	}
 	
 	
-	private void createAndLayoutControls(){
+	private void createAndLayoutControls(Controller controller){
 		
 		//top
 		top = new HBox();
@@ -101,19 +102,28 @@ public class View {
 		center.setId("center");
 		
 		xAxis = new CategoryAxis();
-		xAxis.setLabel("Devices");
+		xAxis.setLabel("Month && Amount");
 
 		yAxis = new NumberAxis();
-		yAxis.setLabel("Visits");
+		yAxis.setLabel("Value");
 
 		barChart = new BarChart(xAxis, yAxis);
 
 		dataSeries1 = new XYChart.Series();
 		dataSeries1.setName("2014");
 
-		dataSeries1.getData().add(new XYChart.Data("Desktop", 567));
-		dataSeries1.getData().add(new XYChart.Data("Phone", 65));
-		dataSeries1.getData().add(new XYChart.Data("Tablet", 23));
+		dataSeries1.getData().add(new XYChart.Data("January", controller.jan.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("February", controller.feb.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("March", controller.mar.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("April", controller.apr.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("May", controller.may.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("June", controller.jun.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("July", controller.jul.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("August", controller.aug.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("September", controller.sep.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("October", controller.oct.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("November", controller.nov.getTotalValue()));
+		dataSeries1.getData().add(new XYChart.Data("December", controller.dec.getTotalValue()));
 
 		barChart.getData().add(dataSeries1);
 		

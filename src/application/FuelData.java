@@ -19,14 +19,26 @@ public class FuelData{
 	private String fuelName;
 	private Fuel fuelPrice;
 	private Fuel fuelAmount;
-	private Date refuelingDate;
 	
-	public FuelData(String fuelName, Fuel fuelPrice, Fuel fuelAmount, Date refuelingDate){
+	private double totalValue; 
+
+	public FuelData(String fuelName, Fuel fuelPrice, Fuel fuelAmount){
 		this.fuelName = fuelName;
 		this.fuelPrice = fuelPrice;
 		this.fuelAmount = fuelAmount;
-		this.refuelingDate = refuelingDate;
 		
+	}
+	
+	public Fuel updateFuelAmount(Fuel one, Fuel two ){
+		return new Fuel(one.getAmount()+two.getAmount()+"");
+	}
+	
+	public double getTotalValue() {
+		return this.totalValue;
+	}
+
+	public void setTotalValue(double totalValue) {
+		this.totalValue = totalValue;
 	}
 	
 	public String getFuelName() {
@@ -47,34 +59,29 @@ public class FuelData{
 	public void setFuelAmount(Fuel fuelAmount) {
 		this.fuelAmount = fuelAmount;
 	}
-	public Date getRefuelingDate() {
-		return refuelingDate;
-	}
 	
-	public void setRefuelingDate(Date refuelingDate) {
-		this.refuelingDate = refuelingDate;
-	}
 	
 }
 
 class Fuel {
 	
-	private double amount;
-	
-	public Fuel(){
-		
-	}
+	public double amount;
 	
 	public Fuel(String input){
 		this.amount = new Double(input.replace(',', '.'));
 	}
 	
-	public double getAmount(String input){
-		return new Double(input.replace(',', '.'));
+	public double getAmount(){
+		return this.amount;
 	}
 
 	public void setAmount(String amount) {
 		this.amount = new Double(amount.replace(',', '.'));
+	}
+	
+	public Fuel addAmount(double amount2){
+		return new Fuel((amount2)+"");
+	 
 	}
 	
 	
