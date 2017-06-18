@@ -25,28 +25,10 @@ public class Controller {
 	public Set<String> gasolineTypes = new HashSet<>();
 	public String fileStatus = "";
 	public ArrayList<FuelData> allData = new ArrayList<>();
-	//public ArrayList<FuelData> filteredData = new ArrayList<>();
-	public Result result = new Result();
-	//public All = 
 	
-	/*
-	public FuelData allData = new FuelData("", new BigDecimal("0.000"), 0.00);
-
-	public FuelData jan = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData feb = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData mar = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData apr = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData may = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData jun = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData jul = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData aug = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData sep = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData oct = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData nov = new FuelData("", new BigDecimal("0.000"), 0.00);
-	public FuelData dec = new FuelData("", new BigDecimal("0.000"), 0.00);
-
-*/
-	public Controller(String file) throws ParseException {
+	public Result result = new Result();
+	
+	public Controller(String file){
 		
 		if (Files.exists(Paths.get(file))) {
 			this.fileStatus = "File is ok";
@@ -70,8 +52,7 @@ public class Controller {
 					} else {
 
 						gasolineTypes.add(parts[0]);
-						
-					allData.add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
+						allData.add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
 						
 					
 					}
@@ -81,6 +62,12 @@ public class Controller {
 			} catch (IOException e) {
 
 				 e.printStackTrace();
+			} catch (NumberFormatException e) {
+				
+				e.printStackTrace();
+			} catch (ParseException e) {
+				
+				e.printStackTrace();
 			}
 
 		} else {
@@ -90,7 +77,7 @@ public class Controller {
 	
 	public void finalData(ArrayList<FuelData>data, String name){
 		
-		makeResult(FilterDataWithGasolineName(data, name));
+	     makeResult(FilterDataWithGasolineName(data, name));
 		
 	}
 	
@@ -113,7 +100,7 @@ public class Controller {
 		
 		Month allMonths[] = new Month[12];
 		
-		for(int l = 0; l<this.result.getMonths().length; l++){
+		for(int l = 0; l<result.getMonths().length; l++){
 			allMonths[l] = (new Month(l,new BigDecimal("0"), 0.00));
 		}
 		
@@ -129,10 +116,10 @@ public class Controller {
 				}
 			}
 			
-			this.result.setMonths(allMonths);
+			result.setMonths(allMonths);
 		}
 		
-		return this.result;
+		return result;
 	}
 
 }
