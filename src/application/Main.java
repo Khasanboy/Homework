@@ -29,7 +29,7 @@ public class Main extends Application {
 			Scene scene = new Scene(view.asParent(), 1200, 600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("Barchart generator");
+			primaryStage.setTitle("Refueling information BarChart generator");
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();

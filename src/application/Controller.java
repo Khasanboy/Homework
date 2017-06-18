@@ -18,61 +18,69 @@ import java.util.stream.Collectors;
 
 public class Controller {
 
-	DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-	TimeZone tz = TimeZone.getDefault();
-	Calendar calendar = Calendar.getInstance(tz);
+	private DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+	private TimeZone tz = TimeZone.getDefault();
+	private Calendar calendar = Calendar.getInstance(tz);
 
-	public Set<String> gasolineTypes = new HashSet<>();
-	public String fileStatus = "";
-	public ArrayList<FuelData> allData = new ArrayList<>();
+	private Set<String> gasolineTypes = new HashSet<>();
+	private String fileStatus = "";
+	private ArrayList<FuelData> allData = new ArrayList<>();
 	
-	public Result result = new Result();
+	private boolean fileOk;
+	private Result result = new Result();
 	
-	public Controller(String file){
+	public Controller(String filePath){
 		
-		if (Files.exists(Paths.get(file))) {
-			this.fileStatus = "File is ok";
-			try {
-				List<String> lines = Files.readAllLines(Paths.get(file));
+		if (Files.exists(Paths.get(filePath))) {
+			this.setFileOk(true);
+			this.setFileStatus("File is ok");
+			
+			readFileAndBuildData(filePath);
+			
+		} else {
+			this.setFileOk(false);
+			this.setFileStatus("File doesn't exist");
+		}
+	}
+	
+	private void readFileAndBuildData(String filePath){
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(filePath));
 
-				for (String string : lines) {
+			for (String string : lines) {
+				
+				String[] parts = string.split(Pattern.quote("|"));
+				
+				if(parts.length!= 4){
+					this.setFileOk(false);
+					this.setFileStatus("File contains some lines without all information");
 					
-					String[] parts = string.split(Pattern.quote("|"));
+				}
+				
+				else if (new BigDecimal(parts[1].replace(",", ".")).intValue()<0 || Double.parseDouble(parts[2].replace(",", ".")) < 0) {
+					this.setFileOk(false);
+					this.setFileStatus("File contains negative values");
 					
-					if(parts.length!= 4){
-						
-						this.fileStatus = "File contains some lines without all information";
-						
-					}
-					
-					else if (new BigDecimal(parts[1].replace(",", ".")).intValue()<0 || Double.parseDouble(parts[2].replace(",", ".")) < 0) {
-						
-						this.fileStatus = "File contains negative values";
-						
-					} else {
+				} else {
 
-						gasolineTypes.add(parts[0]);
-						allData.add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
-						
+					this.getGasolineTypes().add(parts[0]);
+					this.getAllData().add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
 					
-					}
-
 				}
 
-			} catch (IOException e) {
-
-				 e.printStackTrace();
-			} catch (NumberFormatException e) {
-				
-				e.printStackTrace();
-			} catch (ParseException e) {
-				
-				e.printStackTrace();
 			}
 
-		} else {
-			this.fileStatus = "File doesn't exist";
+		} catch (IOException e) {
+
+			 e.printStackTrace();
+		} catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
 		}
+
 	}
 	
 	public void finalData(ArrayList<FuelData>data, String name){
@@ -85,7 +93,7 @@ public class Controller {
 	public ArrayList<FuelData> FilterDataWithGasolineName(ArrayList<FuelData>data, String name){
 		
 		if(name == "All"){
-			 ArrayList<FuelData> filteredData = this.allData;
+			 ArrayList<FuelData> filteredData = this.getAllData();
 			 return filteredData;
 		}
 		else{
@@ -100,10 +108,9 @@ public class Controller {
 		
 		Month allMonths[] = new Month[12];
 		
-		for(int l = 0; l<result.getMonths().length; l++){
+		for(int l = 0; l<this.getResult().getMonths().length; l++){
 			allMonths[l] = (new Month(l,new BigDecimal("0"), 0.00));
 		}
-		
 		
 		for(int i= 0; i<list.size(); i++){
 			calendar.setTime(list.get(i).getRefuelingDate());
@@ -116,10 +123,51 @@ public class Controller {
 				}
 			}
 			
-			result.setMonths(allMonths);
+			this.getResult().setMonths(allMonths);
 		}
 		
+		return this.getResult();
+	}
+	
+	
+	public Set<String> getGasolineTypes() {
+		return gasolineTypes;
+	}
+
+	public void setGasolineTypes(Set<String> gasolineTypes) {
+		this.gasolineTypes = gasolineTypes;
+	}
+
+	public String getFileStatus() {
+		return fileStatus;
+	}
+
+	public void setFileStatus(String fileStatus) {
+		this.fileStatus = fileStatus;
+	}
+
+	public ArrayList<FuelData> getAllData() {
+		return allData;
+	}
+
+	public void setAllData(ArrayList<FuelData> allData) {
+		this.allData = allData;
+	}
+
+	public Result getResult() {
 		return result;
+	}
+
+	public void setResult(Result result) {
+		this.result = result;
+	}
+
+	public boolean isFileOk() {
+		return fileOk;
+	}
+
+	public void setFileOk(boolean fileOk) {
+		this.fileOk = fileOk;
 	}
 
 }
