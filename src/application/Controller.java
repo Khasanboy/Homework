@@ -27,7 +27,9 @@ public class Controller {
 	private ArrayList<FuelData> allData = new ArrayList<>();
 	
 	private boolean fileOk;
+	private boolean readingDone = false;
 	private Result result = new Result();
+	private Thread thread;
 	
 	public Controller(String filePath){
 		
@@ -35,7 +37,14 @@ public class Controller {
 			this.setFileOk(true);
 			this.setFileStatus("File is ok");
 			
-			readFileAndBuildData(filePath);
+			// thread = new Thread(){
+			//	 public void run(){
+			    	readFileAndBuildData(filePath);
+			//    }
+			// };
+
+		 // thread.start();
+			
 			
 		} else {
 			this.setFileOk(false);
@@ -79,6 +88,9 @@ public class Controller {
 		} catch (ParseException e) {
 			
 			e.printStackTrace();
+		}
+		finally{
+			this.setReadingDone(true);
 		}
 
 	}
@@ -130,6 +142,24 @@ public class Controller {
 	}
 	
 	
+	
+	
+	public Thread getThread() {
+		return thread;
+	}
+
+	public void setThread(Thread thread) {
+		this.thread = thread;
+	}
+
+	public boolean isReadingDone() {
+		return readingDone;
+	}
+
+	public void setReadingDone(boolean readingDone) {
+		this.readingDone = readingDone;
+	}
+
 	public Set<String> getGasolineTypes() {
 		return gasolineTypes;
 	}

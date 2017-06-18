@@ -1,5 +1,6 @@
 package application;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -54,7 +55,7 @@ public class View {
 
 		createPane();
 
-		if (this.controller.isFileOk()) {
+		if (this.controller.isFileOk() && this.controller.isReadingDone()) {
 
 			controller.finalData(this.controller.getAllData(), "All");
 
@@ -66,6 +67,7 @@ public class View {
 		setStatus(this.controller);
 
 	}
+	
 
 	public Parent asParent() {
 		return this.getRoot();
@@ -97,25 +99,97 @@ public class View {
 	}
 
 	private void updateLayoutsAndControls(Controller controller) {
+		
+		for(int m = 0; m<this.getDataSeries().getData().size(); m++){
+			 Node node = this.getDataSeries().getData().get(m).getNode();
+             Parent parent = node.parentProperty().get();
+             if (parent != null && parent instanceof Group) {
+                 Group group = (Group) parent;
+                 group.getChildren().clear();
+             }
 
+		}
+		
 		this.getDataSeries().getData().clear();
 		this.getBarChart().getData().clear();
 		System.out.println("data series" + dataSeries.getData().size());
 		System.out.println("barchart " + barChart.getData().size());
+		
+		boolean[]maxId = new boolean[12];
+		boolean[] minId = new boolean[12];
+		
+		BigDecimal max = new BigDecimal("0");
+		BigDecimal min = controller.getResult().getMonths()[0].getTotalValue();
+		
+		for(int k = 0; k < months.size(); k++){
+			if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()>max.doubleValue()){
+				max=controller.getResult().getMonths()[k].getTotalValue();
+				maxId[k] = true ;
+				for(int c=0; c<maxId.length; c++){
+					if(c!=k){
+						maxId[c] = false;
+					}
+					else{
+						maxId[c] = true;
+					}
+				}
+			}
+			else if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()==max.doubleValue()){
+				maxId[k] = true ;
+			}
+			else{
+				maxId[k]=false;
+			}
+			
+			if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()<min.doubleValue()){
+				min=controller.getResult().getMonths()[k].getTotalValue();
+				minId[k] = true ;
+				for(int c=0; c<minId.length; c++){
+					if(c!=k){
+						minId[c] = false;
+					}
+					else{
+						minId[c] = true;
+					}
+				}
+			}
+			else if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()==min.doubleValue()){
+				minId[k] = true ;
+			}
+			else{
+				minId[k]=false;
+			}
+		}
 
 		for (int i = 0; i < months.size(); i++) {
+			
 			final XYChart.Data<String, Number> data = new XYChart.Data<String, Number>(months.get(i), controller.getResult().getMonths()[i].getTotalValue());
+			int d = i;
 			data.nodeProperty().addListener(new ChangeListener<Node>() {
 				@Override
 				public void changed(ObservableValue<? extends Node> ov, Node oldNode, final Node node) {
+					
 					if (node != null) {
-						setNodeStyle(data);
 						displayLabelForData(data);
+						
+						if(maxId[d])
+						{
+							node.setStyle("-fx-bar-fill: -fx-max;");
+						}
+						else if(minId[d]){
+							node.setStyle("-fx-bar-fill: -fx-min;");
+						}
+						else{
+							node.setStyle("-fx-bar-fill: -fx-other;");
+						}
+						
 					}
 				}
 			});
 			this.getDataSeries().getData().add(data);
 		}
+		
+		
 		// this.getBarChart().getData().retainAll();
 		this.getBarChart().getData().add(dataSeries);
 
@@ -129,7 +203,8 @@ public class View {
 			@Override
 			public void changed(ObservableValue<? extends Parent> ov, Parent oldParent, Parent parent) {
 				Group parentGroup = (Group) parent;
-				parentGroup.getChildren().add(dataText);
+				if(parentGroup != null)
+				   parentGroup.getChildren().add(dataText);
 			}
 		});
 
@@ -137,23 +212,11 @@ public class View {
 			@Override
 			public void changed(ObservableValue<? extends Bounds> ov, Bounds oldBounds, Bounds bounds) {
 				dataText.setLayoutX(Math.round(bounds.getMinX() + bounds.getWidth() / 2 - dataText.prefWidth(-1) / 2));
-				dataText.setLayoutY(Math.round(bounds.getMinY() - dataText.prefHeight(-1) * 0.5));
+				dataText.setLayoutY(Math.round(bounds.getMinY() - dataText.prefHeight(-1) * 0.1));
 			}
 		});
 	}
 
-	private void setNodeStyle(XYChart.Data<String, Number> data) {
-		Node node = data.getNode();
-		if (data.getYValue().intValue() > 8) {
-			node.setStyle("-fx-bar-fill: -fx-exceeded;");
-		} else if (data.getYValue().intValue() > 5) {
-			node.setStyle("-fx-bar-fill: -fx-achieved;");
-		} else {
-			node.setStyle("-fx-bar-fill: -fx-not-achieved;");
-		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void createAndLayoutControls(Controller controller) {
 
 		this.getGasolines().setId("combobox");
@@ -162,9 +225,7 @@ public class View {
 		this.getRoot().setLeft(this.getGasolines());
 
 		this.getxAxis().setLabel("Month");
-
-		// this.getyAxis().forceZeroInRangeProperty().set(true);
-		this.getyAxis().setMinHeight(10);
+		//this.getyAxis().setAutoRanging(false);
 
 		this.getyAxis().setTickLabelFormatter(new StringConverter<Number>() {
 
@@ -187,25 +248,84 @@ public class View {
 
 		this.getyAxis().setLabel("Amount of money spent");
 
+		boolean[]maxId = new boolean[12];
+		boolean[] minId = new boolean[12];
+		
+		BigDecimal max = new BigDecimal("0");
+		BigDecimal min = controller.getResult().getMonths()[0].getTotalValue();
+		
+		for(int k = 0; k < months.size(); k++){
+			if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()>max.doubleValue()){
+				max=controller.getResult().getMonths()[k].getTotalValue();
+				maxId[k] = true ;
+				for(int c=0; c<maxId.length; c++){
+					if(c!=k){
+						maxId[c] = false;
+					}
+					else{
+						maxId[c] = true;
+					}
+				}
+			}
+			else if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()==max.doubleValue()){
+				maxId[k] = true ;
+			}
+			else{
+				maxId[k]=false;
+			}
+			
+			if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()<min.doubleValue()){
+				min=controller.getResult().getMonths()[k].getTotalValue();
+				minId[k] = true ;
+				for(int c=0; c<minId.length; c++){
+					if(c!=k){
+						minId[c] = false;
+					}
+					else{
+						minId[c] = true;
+					}
+				}
+			}
+			else if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()==min.doubleValue()){
+				minId[k] = true ;
+			}
+			else{
+				minId[k]=false;
+			}
+		}
+
 		for (int i = 0; i < months.size(); i++) {
-			final XYChart.Data<String, Number> data = new XYChart.Data(months.get(i),
-					controller.getResult().getMonths()[i].getTotalValue());
+			
+			final XYChart.Data<String, Number> data = new XYChart.Data<String, Number>(months.get(i), controller.getResult().getMonths()[i].getTotalValue());
+			int d = i;
 			data.nodeProperty().addListener(new ChangeListener<Node>() {
 				@Override
 				public void changed(ObservableValue<? extends Node> ov, Node oldNode, final Node node) {
+					
 					if (node != null) {
-						setNodeStyle(data);
 						displayLabelForData(data);
+						
+						if(maxId[d])
+						{
+							node.setStyle("-fx-bar-fill: -fx-max;");
+						}
+						else if(minId[d]){
+							node.setStyle("-fx-bar-fill: -fx-min;");
+						}
+						else{
+							node.setStyle("-fx-bar-fill: -fx-other;");
+						}
+						
 					}
 				}
 			});
+			
 			this.getDataSeries().getData().add(data);
 
 		}
 
 		this.getBarChart().setAnimated(false);
 		this.getBarChart().getData().add(this.getDataSeries());
-		// this.barChart.displayLabelForData(this.getDataSeries());
 		this.getBarChart().setLegendVisible(false);
 		this.getRoot().setCenter(this.getBarChart());
 
