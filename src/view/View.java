@@ -84,7 +84,6 @@ public class View {
 
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				System.out.println("chaged changed changed ");
 				controller.finalData(controller.getAllData(), newValue);
 				updateLayoutsAndControls(controller);
 			}
@@ -114,8 +113,6 @@ public class View {
 
 		this.getDataSeries().getData().clear();
 		this.getBarChart().getData().clear();
-		System.out.println("data series" + dataSeries.getData().size());
-		System.out.println("barchart " + barChart.getData().size());
 
 		boolean[] maxId = new boolean[12];
 		boolean[] minId = new boolean[12];

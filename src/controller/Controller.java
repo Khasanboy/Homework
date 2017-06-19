@@ -40,15 +40,8 @@ public class Controller {
 		if (Files.exists(Paths.get(filePath))) {
 			this.setFileOk(true);
 			this.setFileStatus("");
-			
-			// thread = new Thread(){
-			//	 public void run(){
-			    	readFileAndBuildData(filePath);
-			//    }
-			// };
 
-		 // thread.start();
-			
+			    	readFileAndBuildData(filePath);			
 			
 		} else {
 			this.setFileOk(false);
@@ -98,12 +91,7 @@ public class Controller {
 			this.setFileStatus("File containts invalid dateTime format");
 			e.printStackTrace();
 		}
-		
-		/*
-		  finally{
-			this.setReadingDone(true);
-		}
-		*/
+
 
 	}
 	
