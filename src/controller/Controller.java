@@ -1,4 +1,4 @@
-package application;
+package controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,6 +15,10 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import model.FuelData;
+import model.Month;
+import model.Result;
 
 public class Controller {
 
@@ -62,7 +66,7 @@ public class Controller {
 				
 				if(parts.length!= 4){
 					this.setFileOk(false);
-					this.setFileStatus("File contains some lines without all information");
+					this.setFileStatus("File contains some lines without all information or more than 4 ");
 					
 				}
 				
@@ -78,20 +82,28 @@ public class Controller {
 				}
 
 			}
-
-		} catch (IOException e) {
-
-			 e.printStackTrace();
-		} catch (NumberFormatException e) {
 			
+			
+		} catch (IOException e) {
+			this.setFileOk(false);
+			this.setFileStatus("Invalid input");
+			 e.printStackTrace();
+		
+		} catch (NumberFormatException e) {
+			this.setFileOk(false);
+			this.setFileStatus("File containts not number characters for numbers");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			
+			this.setFileOk(false);
+			this.setFileStatus("File containts invalid dateTime format");
 			e.printStackTrace();
 		}
-		finally{
+		
+		/*
+		  finally{
 			this.setReadingDone(true);
 		}
+		*/
 
 	}
 	

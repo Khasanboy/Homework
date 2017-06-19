@@ -2,8 +2,10 @@ package application;
 
 import java.text.ParseException;
 
+import controller.Controller;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import view.View;
 import javafx.scene.Scene;
 
 public class Main extends Application {
@@ -27,7 +29,7 @@ public class Main extends Application {
 		
 		try {			
 			Scene scene = new Scene(view.asParent(), 1200, 600);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Refueling information BarChart generator");
 			primaryStage.show();

@@ -1,4 +1,4 @@
-package application;
+package view;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import controller.Controller;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -55,20 +56,20 @@ public class View {
 
 		createPane();
 
-		if (this.controller.isFileOk() && this.controller.isReadingDone()) {
+		if (this.controller.isFileOk()) {
 
 			controller.finalData(this.controller.getAllData(), "All");
 
 			createAndLayoutControls(this.controller);
 
 			setItemsToCombobox(this.controller);
+			this.getBarChart().setTitle("Refueling information of the year");
 		}
 
 		setStatus(this.controller);
 
 	}
 	
-
 	public Parent asParent() {
 		return this.getRoot();
 	}
@@ -77,6 +78,7 @@ public class View {
 		ObservableList<String> list = FXCollections.observableArrayList(controller.getGasolineTypes());
 		list.add("All");
 		this.getGasolines().setItems(list);
+		this.getGasolines().getSelectionModel().select(list.get(list.size()-1));
 
 		gasolines.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 
@@ -164,6 +166,8 @@ public class View {
 		for (int i = 0; i < months.size(); i++) {
 			
 			final XYChart.Data<String, Number> data = new XYChart.Data<String, Number>(months.get(i), controller.getResult().getMonths()[i].getTotalValue());
+			//System.out.println(controller.getResult().getMonths()[i].getTotalValue());
+			
 			int d = i;
 			data.nodeProperty().addListener(new ChangeListener<Node>() {
 				@Override
@@ -225,7 +229,22 @@ public class View {
 		this.getRoot().setLeft(this.getGasolines());
 
 		this.getxAxis().setLabel("Month");
+		
+		//Node chartPlotArea = this.getBarChart().lookup(".chart-plot-background");
+		//double chartZeroY = chartPlotArea.getLayoutY();
+		//System.out.println(chartZeroY);
+		//this.getyAxis().setLayoutY(chartZeroY + 8);
+		//this.getyAxis().setMinorTickCount(-5);
 		//this.getyAxis().setAutoRanging(false);
+		//this.getyAxis().setForceZeroInRange(true);
+		//this.getyAxis().setTranslateY(-5);
+		//yAxis.setUpperBound(1.0); 
+        //yAxis.setLowerBound(0.0); 
+		//this.getyAxis().setLowerBound(5);
+		//this.getyAxis().setLowerBound(0);
+		//this.getyAxis().setMinHeight(2);
+		//yAxis.setLowerBound(yAxis.getLowerBound()+5);
+        //yAxis.setUpperBound(yAxis.getUpperBound()+5);
 
 		this.getyAxis().setTickLabelFormatter(new StringConverter<Number>() {
 
@@ -275,7 +294,7 @@ public class View {
 			}
 			
 			if(controller.getResult().getMonths()[k].getTotalValue().doubleValue()<min.doubleValue()){
-				min=controller.getResult().getMonths()[k].getTotalValue();
+				min = controller.getResult().getMonths()[k].getTotalValue();
 				minId[k] = true ;
 				for(int c=0; c<minId.length; c++){
 					if(c!=k){
