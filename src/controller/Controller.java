@@ -39,7 +39,7 @@ public class Controller {
 		
 		if (Files.exists(Paths.get(filePath))) {
 			this.setFileOk(true);
-			this.setFileStatus("File is ok");
+			this.setFileStatus("");
 			
 			// thread = new Thread(){
 			//	 public void run(){
