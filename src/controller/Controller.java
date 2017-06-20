@@ -33,14 +33,13 @@ public class Controller {
 	private boolean fileOk;
 	private boolean readingDone = false;
 	private Result result = new Result();
-	private Thread thread;
 	
 	public Controller(String filePath){
 		
 		if (Files.exists(Paths.get(filePath))) {
 			this.setFileOk(true);
 			this.setFileStatus("");
-
+					
 			    	readFileAndBuildData(filePath);			
 			
 		} else {
@@ -141,16 +140,6 @@ public class Controller {
 		return this.getResult();
 	}
 	
-	
-	
-	
-	public Thread getThread() {
-		return thread;
-	}
-
-	public void setThread(Thread thread) {
-		this.thread = thread;
-	}
 
 	public boolean isReadingDone() {
 		return readingDone;

@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -47,6 +48,7 @@ public class View {
 	private XYChart.Series<String, Number> dataSeries = new XYChart.Series<String, Number>();
 
 	private Label status = new Label();
+	
 
 	private Controller controller;
 
@@ -58,7 +60,7 @@ public class View {
 
 		if (this.controller.isFileOk()) {
 
-			controller.finalData(this.controller.getAllData(), "All");
+			this.controller.finalData(this.controller.getAllData(), "All");
 
 			createAndLayoutControls(this.controller);
 
@@ -74,13 +76,17 @@ public class View {
 		return this.getRoot();
 	}
 
-	private void setItemsToCombobox(Controller controller) {
+	public void setItemsToCombobox(Controller controller) {
+		this.getGasolines().getSelectionModel().clearSelection();
+	    this.getGasolines().getItems().clear();
+	       //this.controller.view.getRoot().getChildren().remove(this.controller.view.getGasolines());
+		
 		ObservableList<String> list = FXCollections.observableArrayList(controller.getGasolineTypes());
 		list.add("All");
 		this.getGasolines().setItems(list);
 		this.getGasolines().getSelectionModel().select(list.get(list.size() - 1));
-
-		gasolines.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+		
+		ChangeListener<String> comboListener = new ChangeListener<String>() {
 
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -88,14 +94,17 @@ public class View {
 				updateLayoutsAndControls(controller);
 			}
 
-		});
+		};
+
+		gasolines.getSelectionModel().selectedItemProperty().addListener(comboListener);
 	}
 
 	private void setStatus(Controller controller) {
 
 		this.getStatus().setText(controller.getFileStatus());
 		this.getStatus().setId("status");
-
+		this.getStatus().setMaxWidth(Double.MAX_VALUE);
+	    this.getStatus().setAlignment(Pos.CENTER);
 		this.getRoot().setBottom(status);
 	}
 
@@ -208,7 +217,7 @@ public class View {
 		});
 	}
 
-	private void createAndLayoutControls(Controller controller) {
+	public void createAndLayoutControls(Controller controller) {
 
 		this.getGasolines().setId("combobox");
 		this.getGasolines().setPromptText("Select gasoline type");
@@ -216,23 +225,6 @@ public class View {
 		this.getRoot().setLeft(this.getGasolines());
 
 		this.getxAxis().setLabel("Month");
-
-		// Node chartPlotArea =
-		// this.getBarChart().lookup(".chart-plot-background");
-		// double chartZeroY = chartPlotArea.getLayoutY();
-		// System.out.println(chartZeroY);
-		// this.getyAxis().setLayoutY(chartZeroY + 8);
-		// this.getyAxis().setMinorTickCount(-5);
-		// this.getyAxis().setAutoRanging(false);
-		// this.getyAxis().setForceZeroInRange(true);
-		// this.getyAxis().setTranslateY(-5);
-		// yAxis.setUpperBound(1.0);
-		// yAxis.setLowerBound(0.0);
-		// this.getyAxis().setLowerBound(5);
-		// this.getyAxis().setLowerBound(0);
-		// this.getyAxis().setMinHeight(2);
-		// yAxis.setLowerBound(yAxis.getLowerBound()+5);
-		// yAxis.setUpperBound(yAxis.getUpperBound()+5);
 
 		this.getyAxis().setTickLabelFormatter(new StringConverter<Number>() {
 

@@ -1,10 +1,12 @@
 package application;
 
+import java.io.File;
 import java.text.ParseException;
 
 import controller.Controller;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import utils.FileWatcher;
 import view.View;
 import javafx.scene.Scene;
 
