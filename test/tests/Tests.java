@@ -12,7 +12,8 @@ public class Tests {
 	
 	 @Rule public JavaFXThreadingRule javafxRule = new JavaFXThreadingRule();
 	 
-	 private Controller controller = new Controller("C:\\Users\\tsar\\Desktop\\Homework\\data\\data.txt");
+
+	 private Controller controller = new Controller("C:\\Users\\GANALOGICS10\\workspace\\Homework\\data\\test.txt");
 	
 
 	@Test
@@ -32,6 +33,7 @@ public class Tests {
 		System.out.println(controller.getResult().getMonths()[0].getTotalValue());
 		Assert.assertEquals((long)252.931, controller.getResult().getMonths()[0].getTotalValue().intValue());
 	}
+	
 	
 
 }

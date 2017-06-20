@@ -23,7 +23,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
@@ -47,32 +49,34 @@ public class View {
 	private XYChart.Series<String, Number> dataSeries = new XYChart.Series<String, Number>();
 
 	private Label status = new Label();
+	private ProgressIndicator progress = new ProgressIndicator();
 
 	private Controller controller;
 
 	public View(Controller controller) {
 
 		this.controller = controller;
+		
+		this.controller.setView(this);
 
 		createPane();
-
-		if (this.controller.isFileOk()) {
-
-			controller.finalData(this.controller.getAllData(), "All");
-
-			createAndLayoutControls(this.controller);
-
-			setItemsToCombobox(this.controller);
-			this.getBarChart().setTitle("Refueling information of the year");
-		}
-
-		setStatus(this.controller);
 
 	}
 
 	public Parent asParent() {
 		return this.getRoot();
 	}
+	
+	
+	public void showBarChart(){
+		controller.finalData(this.controller.getAllData(), "All");
+
+		createAndLayoutControls(this.controller);
+
+		setItemsToCombobox(this.controller);
+		this.getBarChart().setTitle("Refueling information of the year");
+	}
+	
 
 	private void setItemsToCombobox(Controller controller) {
 		ObservableList<String> list = FXCollections.observableArrayList(controller.getGasolineTypes());
@@ -91,13 +95,6 @@ public class View {
 		});
 	}
 
-	private void setStatus(Controller controller) {
-
-		this.getStatus().setText(controller.getFileStatus());
-		this.getStatus().setId("status");
-
-		this.getRoot().setBottom(status);
-	}
 
 	private void updateLayoutsAndControls(Controller controller) {
 
@@ -217,23 +214,6 @@ public class View {
 
 		this.getxAxis().setLabel("Month");
 
-		// Node chartPlotArea =
-		// this.getBarChart().lookup(".chart-plot-background");
-		// double chartZeroY = chartPlotArea.getLayoutY();
-		// System.out.println(chartZeroY);
-		// this.getyAxis().setLayoutY(chartZeroY + 8);
-		// this.getyAxis().setMinorTickCount(-5);
-		// this.getyAxis().setAutoRanging(false);
-		// this.getyAxis().setForceZeroInRange(true);
-		// this.getyAxis().setTranslateY(-5);
-		// yAxis.setUpperBound(1.0);
-		// yAxis.setLowerBound(0.0);
-		// this.getyAxis().setLowerBound(5);
-		// this.getyAxis().setLowerBound(0);
-		// this.getyAxis().setMinHeight(2);
-		// yAxis.setLowerBound(yAxis.getLowerBound()+5);
-		// yAxis.setUpperBound(yAxis.getUpperBound()+5);
-
 		this.getyAxis().setTickLabelFormatter(new StringConverter<Number>() {
 
 			@Override
@@ -331,7 +311,16 @@ public class View {
 	}
 
 	private void createPane() {
+		
 		this.setRoot(new BorderPane());
+		VBox bottom = new VBox();
+		status.setId("status");
+		status.setText("Reading the file");
+		bottom.getChildren().add(progress);
+		bottom.getChildren().add(status);
+		
+		this.getRoot().setBottom(bottom);
+		
 		this.getRoot().setPadding(new Insets(10));
 	}
 
@@ -341,6 +330,15 @@ public class View {
 
 	public void setRoot(BorderPane root) {
 		this.root = root;
+	}
+	
+
+	public ProgressIndicator getProgress() {
+		return progress;
+	}
+
+	public void setProgress(ProgressIndicator progress) {
+		this.progress = progress;
 	}
 
 	public ComboBox<String> getGasolines() {

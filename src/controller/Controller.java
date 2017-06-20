@@ -15,85 +15,35 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import model.FuelData;
 import model.Month;
 import model.Result;
+import view.View;
 
-public class Controller {
+public class Controller{
 
 	private DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 	private TimeZone tz = TimeZone.getDefault();
 	private Calendar calendar = Calendar.getInstance(tz);
 
 	private Set<String> gasolineTypes = new HashSet<>();
-	private String fileStatus = "";
 	private ArrayList<FuelData> allData = new ArrayList<>();
-	
-	private boolean fileOk;
-	private boolean readingDone = false;
+
 	private Result result = new Result();
-	private Thread thread;
+	private View view;
+	private FileReadingServices readingService;
+	private List<String> lines;
 	
-	public Controller(String filePath){
+	public Controller(String filePath) {
 		
-		if (Files.exists(Paths.get(filePath))) {
-			this.setFileOk(true);
-			this.setFileStatus("");
-
-			    	readFileAndBuildData(filePath);			
-			
-		} else {
-			this.setFileOk(false);
-			this.setFileStatus("File doesn't exist");
-		}
+		readingService = new FileReadingServices(this, filePath);
+		
+		readingService.start();
+		
 	}
 	
-	private void readFileAndBuildData(String filePath){
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(filePath));
-
-			for (String string : lines) {
-				
-				String[] parts = string.split(Pattern.quote("|"));
-				
-				if(parts.length!= 4){
-					this.setFileOk(false);
-					this.setFileStatus("File contains some lines without all information or more than 4 ");
-					
-				}
-				
-				else if (new BigDecimal(parts[1].replace(",", ".")).intValue()<0 || Double.parseDouble(parts[2].replace(",", ".")) < 0) {
-					this.setFileOk(false);
-					this.setFileStatus("File contains negative values");
-					
-				} else {
-
-					this.getGasolineTypes().add(parts[0]);
-					this.getAllData().add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
-					
-				}
-
-			}
-			
-			
-		} catch (IOException e) {
-			this.setFileOk(false);
-			this.setFileStatus("Invalid input");
-			 e.printStackTrace();
-		
-		} catch (NumberFormatException e) {
-			this.setFileOk(false);
-			this.setFileStatus("File containts not number characters for numbers");
-			e.printStackTrace();
-		} catch (ParseException e) {
-			this.setFileOk(false);
-			this.setFileStatus("File containts invalid dateTime format");
-			e.printStackTrace();
-		}
-
-
-	}
 	
 	public void finalData(ArrayList<FuelData>data, String name){
 		
@@ -140,25 +90,99 @@ public class Controller {
 		
 		return this.getResult();
 	}
+
 	
+	public class FileReadingServices extends Service<Void> {
+		
+		private String filePath;
+		private Controller controller;
+		
+		public FileReadingServices(Controller controller, String filePath){
+			this.filePath = filePath;
+			this.controller = controller;
+		}
+		
+		@Override
+	    protected void succeeded() {
+	       this.controller.getView().showBarChart();
+	       this.controller.view.getProgress().visibleProperty().set(false);
+	       this.controller.view.getStatus().setText("");
+	    }
+
+	    @Override
+	    protected void failed() {
+	    	//System.out.println("File not found");
+	    	this.controller.view.getProgress().visibleProperty().set(false);
+	    	this.controller.view.getStatus().setText("File not found");
+	    }
+
+	    @Override
+	    protected void cancelled() {
+	        //statusMessagesProperty().set("Connecting cancelled.");
+	        //connectedProperty().set(false);
+	    }
+
+		@Override
+		protected Task<Void> createTask() {
+			 return new Task<Void>() {
+	             @Override
+	             protected Void call() throws Exception {
+	            	
+	            	 try {
+	         			List<String> lines = Files.readAllLines(Paths.get(filePath));
+
+	         			for (String string : lines) {
+	         				
+	         				String[] parts = string.split(Pattern.quote("|"));
+	         				
+	         				if(parts.length!= 4){
+	         					
+	         					 updateMessage("File contains not 4 patrs in the line");
+	         				}
+	         				
+	         				else if (new BigDecimal(parts[1].replace(",", ".")).intValue()<0 || Double.parseDouble(parts[2].replace(",", ".")) < 0) {
+	         					 updateMessage("File contains negative values");
+	         					
+	         				} else {
+
+	         					controller.getGasolineTypes().add(parts[0]);
+	         					controller.getAllData().add(new FuelData(parts[0], new BigDecimal(parts[1].replace(",", ".")), Double.parseDouble(parts[2].replace(",", ".")), format.parse(parts[3])));
+	         					
+	         				}
+
+	         			}
+	         			
+	         			
+	         		} catch (IOException e) {
+	         			controller.view.getStatus().setText("File is not found");
+	         			System.out.println("File not found");
+	         			 e.printStackTrace();
+	         		
+	         		} catch (NumberFormatException e) {
+	         			updateMessage("File containts not number characters for numbers");
+	         			//controller.view.getStatus().setText("File containts not number characters for numbers");
+	         			e.printStackTrace();
+	         		} catch (ParseException e) {
+	         			updateMessage("File containts invalid Date format");
+	         			//controller.view.getStatus().setText("File containts invalid dateTime format");
+	         			e.printStackTrace();
+	         		}
+					return null;
+	             }
+	         };
+		}
+
+	}
 	
-	
-	
-	public Thread getThread() {
-		return thread;
+
+	public View getView() {
+		return view;
 	}
 
-	public void setThread(Thread thread) {
-		this.thread = thread;
+	public void setView(View view) {
+		this.view = view;
 	}
 
-	public boolean isReadingDone() {
-		return readingDone;
-	}
-
-	public void setReadingDone(boolean readingDone) {
-		this.readingDone = readingDone;
-	}
 
 	public Set<String> getGasolineTypes() {
 		return gasolineTypes;
@@ -168,13 +192,6 @@ public class Controller {
 		this.gasolineTypes = gasolineTypes;
 	}
 
-	public String getFileStatus() {
-		return fileStatus;
-	}
-
-	public void setFileStatus(String fileStatus) {
-		this.fileStatus = fileStatus;
-	}
 
 	public ArrayList<FuelData> getAllData() {
 		return allData;
@@ -192,12 +209,14 @@ public class Controller {
 		this.result = result;
 	}
 
-	public boolean isFileOk() {
-		return fileOk;
+	public List<String> getLines() {
+		return lines;
 	}
 
-	public void setFileOk(boolean fileOk) {
-		this.fileOk = fileOk;
+
+	public void setLines(List<String> lines) {
+		this.lines = lines;
 	}
+
 
 }
